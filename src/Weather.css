@@ -1,0 +1,34 @@
+.Weather form {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 auto;
+}
+
+.Weather .WeatherToday {
+  display: flex;
+  margin: 0 auto;
+  justify-content: space-evenly;
+  color: white;
+  padding: 1em;
+  align-items: center;
+}
+
+.today-date,
+.today-weather {
+  margin: 0.5em;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.Weather .todays-icon {
+  margin-left: -1.5em;
+}
+@media screen and (max-width: 650px) {
+  .Weather .WeatherToday {
+    flex-direction: column;
+  }
+
+  .Weather .today-date {
+    text-align: center;
+  }
+}
