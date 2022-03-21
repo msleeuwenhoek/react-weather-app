@@ -1,49 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import WeatherToday from "./WeatherToday";
 import "./Weather.css";
+import axios from "axios";
 
-export default function Weather() {
-  return (
-    <div className="Weather">
-      <form className="Search row">
-        <input
-          type="search"
-          placeholder="Search for your city"
-          autoFocus="on"
-          autoComplete="off"
-          className="col-6 "
-        />
-        <button type="submit" className="col-2 btn btn-primary btn-large">
-          Search
-        </button>
-        <button type="button" className="col-2 btn btn-primary btn-large">
-          Use location
-        </button>
-      </form>
-      <div className="WeatherToday">
-        <div className="today-date">
-          <div className="today">
-            <h1 className="current-city">Rotterdam</h1>
-            Wednesday, february 8 2022
-          </div>
-          <div>Last updated - 12.45</div>
-        </div>
-        <div className="today-weather">
-          <div className="split-weather">
-            <img
-              className="todays-icon"
-              src="https://openweathermap.org/img/wn/01d@2x.png"
-              alt="weather-icon"
-            />
-            <span className="temp">9 °C</span>
-          </div>
-          <div className="split-weather">
-            <div className="weather-description text-capitalize">Cloudy</div>
-            <div className="humidity">Humidity: 80%</div>
-            <div className="wind">Wind: 2 m/sec</div>
-          </div>
-        </div>
+export default function Weather(props) {
+  const [weatherData, setWeatherData] = useState({ ready: false });
+  const [city, setCity] = useState(props.city);
+  function setWeather(response) {
+    setWeatherData({
+      ready: true,
+      temperature: response.data.main.temp,
+      humidity: response.data.main.humidity,
+      description: response.data.weather[0].description,
+      wind: response.data.wind.speed,
+      city: response.data.name,
+      icon: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+      date: new Date(response.data.dt * 1000),
+    });
+  }
+
+  function search() {
+    let apiKey = "3a3fb11a6316d75f69f5016b49163029";
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(setWeather);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    search(city);
+  }
+  function updateCity(event) {
+    setCity(event.target.value);
+  }
+  if (weatherData.ready) {
+    return (
+      <div className="Weather">
+        <form className="Search row">
+          <input
+            type="search"
+            placeholder="Search for your city"
+            autoFocus="on"
+            autoComplete="off"
+            className="col-6 "
+            onChange={updateCity}
+          />
+          <button type="submit" className="col-2 btn btn-primary btn-large">
+            Search
+          </button>
+          <button type="button" className="col-2 btn btn-primary btn-large">
+            Use location
+          </button>
+        </form>
+        <WeatherToday weatherData={weatherData} />
       </div>
-    </div>
-  );
+    );
+  } else {
+    search();
+    return "loading..";
+  }
 }
